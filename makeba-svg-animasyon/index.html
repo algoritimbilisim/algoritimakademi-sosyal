@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
+    <style id="background-styles">
       @keyframes color {
         0% {
           background: #33CCCC;
@@ -43,7 +43,7 @@
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
     <audio id="myAudio" src="makeba.mp3"></audio>
-    <script>
+    <script  id="audio-script">
       window.onload = function() {
         var audio = document.getElementById("myAudio");
         audio.currentTime = 42; // İstenilen başlama süresini saniye cinsinden belirtin
