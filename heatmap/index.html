@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script>
+	let pozisyonlar = {};
+	let FACTOR = 1;
+	 let max = 0;
+	function istatistikAl() {
+		let x = event.pageX
+		let y = event.pageY
+		gosterge.style.top = y+5+"px";
+		gosterge.style.left = x+5+"px";
+		x1.innerText = x;
+		y1.innerText = y;
+
+		let kayit = pozisyonlar[parseInt(x)+'~'+parseInt(y)];
+		console.log(kayit)
+		pozisyonlar[parseInt(x)+'~'+parseInt(y)]=kayit?kayit+=parseInt(Math.random() * (40 - 5) + 5):1;
+
+		if(max<kayit) max=kayit;
+	 } 
+	 function round5(x)
+{
+    return FACTOR<2?parseInt(x): parseInt(Math.ceil(x/FACTOR)*FACTOR);
+}
+</script>
+
+</head>
+<body style="margin: 0;padding: 0 ;width:100vw;height:100vh;background-color:#eee;display: flex;justify-content: center;align-items: center;left:0;top: 0;flex-direction: column;" onmousemove="istatistikAl()">
+	<h1>Merhaba</h1>
+	<h2>Bu bir denemedir</h2>
+	<h2>Bu bir denemedir</h2>
+	<h2>Bu bir denemedir</h2>
+	<h2>Bu bir denemedir</h2>
+	<h2>Bu bir denemedir</h2>
+	<div id="main" style="position: absolute;width: 100vw;height: 100vh;left:0;top: 0;"></div>
+	<button style="position:absolute;right: 10px;top: 10px;" onclick="generateChart()">GENERATE MAP</button>
+		<div id="gosterge" style="width:100px;height:100px; position: absolute;">
+		<table>
+			<tr>
+				<td>X</td>
+				<td id="x1"></td>
+				<td>Y</td>
+				<td id="y1"></td>
+			</tr>
+			<tr>
+				<td>X</td>
+				<td id="x2"></td>
+				<td>Y</td>
+				<td id="y1"></td>
+			</tr>
+		</table>
+	</div>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.3.3/dist/echarts.min.js"></script>
+
+<script>
+
+var app = {};
+
+var chartDom = document.getElementById('main');
+var myChart = echarts.init(chartDom);
+var option;
+let data;
+let data2;
+
+let xData = [];
+let yData = [];
+function generateData(theta, min, max) {
+	data = [];
+	data2 = [];
+	for(p in pozisyonlar){
+		let [x,y]=p.split("~");
+		data.push({pos:[x, y], size:pozisyonlar[p]});
+		data2.push([x, y, pozisyonlar[p]]);
+	}
+  
+  for (let j = 0; j < window.innerWidth; j+=FACTOR) {
+    xData.push(j);
+  }
+  for (let j = 0; j < window.innerHeight; j+=FACTOR) {
+    yData.push(j);
+  }
+
+  return data;
+}
+
+function generateChart(){
+	data = generateData(2, -5, 5);
+	poss = data.map(e=>e.pos)
+	sizes = data.map(e=>e.size)
+	console.log(poss);
+	console.log(sizes)
+	option = {
+  xAxis: {
+  	max:window.innerWidth,
+  	show:false,
+  },
+  yAxis: {
+  	max:window.innerHeight,
+  	show:false,
+  	inverse:true
+  },
+        visualMap: {
+        min: 0,
+        max: max,
+        dimension: 1,
+        orient: 'vertical',
+        right: 10,
+        top: 'center',
+        text: ['HIGH', 'LOW'],
+        calculable: true,
+        inRange: {
+          color: ['#f2c31a55', '#24b7f255']
+        },
+        show:false
+      },
+  series: [
+    {
+      name: '1990',
+      data: data2,
+      type: 'scatter',
+      symbolSize: function (val) {
+        return val[2]*50/max;
+      },
+      /*emphasis: {
+        focus: 'series',
+        label: {
+          show: true,
+          formatter: function (param) {
+            return param.data[3];
+          },
+          position: 'top'
+        }
+      },*/
+      itemStyle: {
+        shadowBlur: 10,
+        shadowColor: 'rgba(120, 36, 50, 0.5)',
+        shadowOffsetY: 5,
+        color: new echarts.graphic.RadialGradient(0.4, 0.3, 1, [
+          {
+            offset: 0,
+            color: 'rgb(251, 118, 123)'
+          },
+          {
+            offset: 1,
+            color: 'rgb(204, 46, 72)'
+          }
+        ])
+      }
+    },
+  ]
+};
+/*option = {
+  tooltip: {show:false},
+  xAxis: {
+    type: 'category',
+    //show:false
+  },
+  yAxis: {
+    type: 'category',
+    //show:false,
+    //inverse:true
+  },
+  visualMap: {
+    min: 0,
+    max:window.innerWidth,
+    calculable: true,
+    realtime: false,
+    inRange: {
+      color: [
+        '#31369555',
+        '#4575b455',
+        '#74add155',
+        '#abd9e955',
+        '#e0f3f855',
+        '#ffffbf55',
+        '#fee09055',
+        '#fdae6155',
+        '#f46d4355',
+        '#d7302755',
+        '#a5002655'
+      ]
+    }
+  },
+  series: [
+    {
+      name: 'Gaussian',
+      type: 'heatmap',
+      data: data,
+      emphasis: {
+        itemStyle: {
+          borderColor: '#333',
+          borderWidth: 1
+        }
+      },
+      progressive: 1000,
+      animation: false
+    }
+  ]
+};*/
+
+
+option && myChart.setOption(option);
+}
+
+</script>
+</body>
+</html>
